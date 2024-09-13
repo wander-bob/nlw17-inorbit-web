@@ -18,6 +18,8 @@ import {
   RadioGroupIndicator,
   RadioGroupItem,
 } from './ui/radio-group';
+import { createGoal } from '../http/create-goal';
+import { useQueryClient } from '@tanstack/react-query';
 
 const createGoalForm = z.object({
   title: z.string().min(1, 'Informe a atividade que deseja realizar'),
@@ -27,13 +29,22 @@ const createGoalForm = z.object({
 type CreateGoalForm = z.infer<typeof createGoalForm>;
 
 export function CreateGoal() {
-  const { register, control, handleSubmit, formState } =
+  const useClient = useQueryClient();
+
+  const { register, control, handleSubmit, formState, reset } =
     useForm<CreateGoalForm>({
       resolver: zodResolver(createGoalForm),
     });
 
-  function handleCreateGoal(data: CreateGoalForm) {
-    console.log(data);
+  async function handleCreateGoal(data: CreateGoalForm) {
+    await createGoal({
+      title: data.title,
+      desiredWeeklyFrequency: data.desiredWeeklyFrequency,
+    });
+
+    useClient.invalidateQueries({ queryKey: ['summary'] });
+    useClient.invalidateQueries({ queryKey: ['pending-goals'] });
+    reset();
   }
 
   return (
@@ -104,6 +115,34 @@ export function CreateGoal() {
                           3x na semana
                         </span>
                         <span className="text-lg leading-none">😎</span>
+                      </RadioGroupItem>
+                      <RadioGroupItem value="4">
+                        <RadioGroupIndicator />
+                        <span className="text-zinc-300 text-sm font-medium leading-none">
+                          4x na semana
+                        </span>
+                        <span className="text-lg leading-none">😜</span>
+                      </RadioGroupItem>
+                      <RadioGroupItem value="5">
+                        <RadioGroupIndicator />
+                        <span className="text-zinc-300 text-sm font-medium leading-none">
+                          5x na semana
+                        </span>
+                        <span className="text-lg leading-none">🤨</span>
+                      </RadioGroupItem>
+                      <RadioGroupItem value="6">
+                        <RadioGroupIndicator />
+                        <span className="text-zinc-300 text-sm font-medium leading-none">
+                          6x na semana
+                        </span>
+                        <span className="text-lg leading-none">🤯</span>
+                      </RadioGroupItem>
+                      <RadioGroupItem value="7">
+                        <RadioGroupIndicator />
+                        <span className="text-zinc-300 text-sm font-medium leading-none">
+                          Todos dias da semana
+                        </span>
+                        <span className="text-lg leading-none">🔥</span>
                       </RadioGroupItem>
                     </RadioGroup>
                   );
