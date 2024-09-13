@@ -12,6 +12,7 @@ export function App() {
     queryFn: getSummary,
     staleTime: 1000 * 60, //60 seconds
   });
+
   return (
     <>
       <Dialog>
